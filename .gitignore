@@ -1,0 +1,6 @@
+.direnv
+.run
+.bin
+.cache
+.config
+.data
