@@ -30,7 +30,7 @@
     };
   };
 
-  outputs = {
+  outputs = inputs @ {
     self,
     clan-core,
     ...
@@ -43,6 +43,7 @@
 
       # Debug info for now
       specialArgs = {
+        inherit inputs;
         nixpkgs = {
           config = {
             debug = true;

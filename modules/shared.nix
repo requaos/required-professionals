@@ -5,29 +5,51 @@
   inputs,
   clan-core,
   ...
-}: {
+}: let
+  system = "x86_64-linux";
+  rust-dev = with builtins.removeAttrs
+  (
+    inputs.fenix.packages.${system}.latest
+    // {inherit (inputs.fenix.packages.${system}) rust-analyzer targets;}
+  )
+  ["withComponents"]; [
+    cargo
+    (lib.lowPrio clippy)
+    rust-src
+    rustc
+    rustfmt
+    rust-analyzer
+    targets.wasm32-unknown-unknown.latest.rust-std
+
+    # Necessary for the openssl-sys crate:
+    pkgs.openssl_1_1
+    pkgs.pkg-config
+
+    pkgs.jetbrains.rust-rover
+  ];
+in {
   imports = [
     # Enables the OpenSSH server for remote access
-    clan-core.clanModules.sshd
+    # clan-core.clanModules.sshd
     # Set a root password
-    clan-core.clanModules.root-password
-    clan-core.clanModules.user-password
-    clan-core.clanModules.state-version
+    # clan-core.clanModules.root-password
+    # clan-core.clanModules.user-password
+    # clan-core.clanModules.state-version
   ];
 
   # generate a random password for our user below
   # can be read using `clan secrets get <machine-name>-user-password` command
   # clan.user-password.user = "user";
   users.users = {
-    user = {
+    req = {
       initialHashedPassword = "$y$j9T$WKj3UyDIuS1i5jl8u62Gm0$trGjHf0T4ob87gdP.qQvwKIjCND.r8ckCdupE1yLgy8";
-      isNormalUser = true;
-      createHome = true;
       extraGroups = [
         "wheel"
         "networkmanager"
         "video"
         "input"
+        "dialout"
+        "cdrom"
       ];
       uid = 1000;
       openssh.authorizedKeys.keys = config.users.users.root.openssh.authorizedKeys.keys;
@@ -37,19 +59,6 @@
     };
     root = {
       initialHashedPassword = "$y$j9T$udmWOUL83BI/zSUuqJOXR.$8xR73OTkV52DQVdp6PspvROhLzG8Mgj3VQjG8AOub34";
-    };
-  };
-  ssh = {
-    # For rage encryption, all hosts need a ssh key pair
-    openssh = {
-      enable = true;
-      openFirewall = lib.mkDefault true;
-      startWhenNeeded = true;
-      settings = {
-        PermitRootLogin = lib.mkDefault "no";
-        PasswordAuthentication = true;
-        X11Forwarding = true;
-      };
     };
   };
   boot = {
@@ -65,79 +74,89 @@
   };
   environment = {
     # Selection of sysadmin tools that can come in handy
-    systemPackages = with pkgs; [
-      # Linux, non-darwin, packages
-      dosfstools
-      gptfdisk
-      iputils
-      usbutils
-      utillinux
+    systemPackages = with pkgs;
+      [
+        # Linux, non-darwin, packages
+        dosfstools
+        gptfdisk
+        iputils
+        usbutils
+        utillinux
 
-      # neofetch
-      killall
+        # neofetch
+        killall
 
-      # niff tool, rust port of nvd should be used instead, but...
-      nvd
+        # niff tool, rust port of nvd should be used instead, but...
+        nvd
 
-      # must come from unstable channel
-      # alejandra
-      binutils
-      coreutils
-      curl
-      dnsutils
-      fd
-      git
-      bottom
-      jq
-      libxml2
-      manix
-      moreutils
-      nix-index
-      nmap
-      pciutils
-      ripgrep
-      skim
-      whois
-      graphviz
-      unzip
-      p7zip
+        # must come from unstable channel
+        # alejandra
+        binutils
+        coreutils
+        curl
+        dnsutils
+        fd
+        git
+        bottom
+        jq
+        libxml2
+        manix
+        moreutils
+        nix-index
+        nmap
+        pciutils
+        ripgrep
+        skim
+        whois
+        graphviz
+        unzip
+        p7zip
 
-      # magic shell history
-      # atuin
-      blesh
+        # magic shell history
+        # atuin
+        blesh
 
-      # debug info
-      dmidecode
+        # debug info
+        dmidecode
 
-      # maybe linux/bash specific. YOLO
-      mcfly
-      brightnessctl
+        # maybe linux/bash specific. YOLO
+        mcfly
+        brightnessctl
 
-      # CORE UTILS
-      vim
-      gnused # sed
-      tree
+        # CORE UTILS
+        vim
+        gnused # sed
+        tree
 
-      # MODERN CORE UTILS
-      topgrade
-      tealdeer # tldr
+        # MODERN CORE UTILS
+        topgrade
+        tealdeer # tldr
 
-      ripgrep
-      fd
+        ripgrep
+        fd
 
-      # NETWORK TOOLS
-      drill
-      curl
-      wget
-      # maybe this doesn't go here, or we flag as optional against `home-manager.users.{userName}.programs.networkmanager.enable = true'
-      networkmanager
+        # NETWORK TOOLS
+        drill
+        curl
+        wget
+        # maybe this doesn't go here, or we flag as optional against `home-manager.users.{userName}.programs.networkmanager.enable = true'
+        networkmanager
 
-      # PERF TOOLS
-      htop
-      nethogs
-      # radeontop
-      # nvtop
-    ];
+        # PERF TOOLS
+        htop
+        nethogs
+        # radeontop
+        # nvtop
+
+        # t1000-e tracker card programming
+        adafruit-nrfutil
+
+        # cd-burning
+        cdrkit
+        cdrdao
+        kdePackages.k3b
+      ]
+      ++ rust-dev;
 
     shellAliases = {
       # fix nixos-option for flake compat
@@ -147,6 +166,13 @@
     variables = {
       EDITOR = "${pkgs.vim}/bin/vim";
       VISUAL = "${pkgs.vim}/bin/vim";
+    };
+
+    sessionVariables = {
+      RUST_SRC_PATH = "${inputs.fenix.packages.${system}.latest.rust-src}";
+      PKG_CONFIG_PATH = "${pkgs.openssl_1_1.dev}/lib/pkgconfig";
+      OPENSSL_DIR = "${pkgs.openssl_1_1}";
+      LD_LIBRARY_PATH = lib.makeLibraryPath [pkgs.openssl_1_1];
     };
   };
   fonts = {
@@ -200,6 +226,16 @@
     '';
   };
   services = {
+    # For rage encryption, all hosts need a ssh key pair
+    openssh = {
+      enable = true;
+      openFirewall = lib.mkDefault true;
+      startWhenNeeded = true;
+      settings = {
+        PermitRootLogin = lib.mkDefault "no";
+        X11Forwarding = true;
+      };
+    };
     dbus.enable = true;
 
     gnome.gnome-keyring.enable = true;
@@ -320,6 +356,22 @@
           ];
         enableSystemdResolved = config.services.resolved.enable;
       });
+    };
+  };
+  security = {
+    wrappers = with pkgs; {
+      cdrdao = {
+        setuid = true;
+        owner = "root";
+        group = "root";
+        source = "${cdrdao}/bin/cdrdao";
+      };
+      cdrecord = {
+        setuid = true;
+        owner = "root";
+        group = "root";
+        source = "${cdrtools}/bin/cdrecord";
+      };
     };
   };
 }
