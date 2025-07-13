@@ -58,7 +58,7 @@ in {
       shell = pkgs.nushell;
     };
     root = {
-      initialHashedPassword = "$y$j9T$udmWOUL83BI/zSUuqJOXR.$8xR73OTkV52DQVdp6PspvROhLzG8Mgj3VQjG8AOub34";
+      initialHashedPassword = "$y$j9T$97uoYd9ttSGxW/AVloAC5.$pVZJdhmTAF.1iytnzLvpqSAhM/NqwQI.sem6XvYfd39";
     };
   };
   boot = {
@@ -232,7 +232,6 @@ in {
       openFirewall = lib.mkDefault true;
       startWhenNeeded = true;
       settings = {
-        PermitRootLogin = lib.mkDefault "no";
         X11Forwarding = true;
       };
     };
@@ -258,78 +257,6 @@ in {
         BrowseProtocols all
       '';
     };
-    # Locale service discovery and mDNS
-    avahi = {
-      enable = true;
-      nssmdns4 = true;
-      openFirewall = true;
-    };
-    nscd.enableNsncd = true;
-    # DNS
-    adguardhome = {
-      enable = true;
-      # extraArgs = [];
-      mutableSettings = false;
-      settings = {
-        # disable default rate limit of 20
-        ratelimit = 0;
-
-        http = {
-          address = "0.0.0.0:8053";
-        };
-
-        dns = {
-          bind_hosts = ["0.0.0.0"];
-          port = 53;
-
-          bootstrap_dns = [
-            # use unsecured quad9 for bootstrap
-            "9.9.9.10"
-          ];
-
-          upstream_dns = [
-            # send unqualified names to router (ex: router, desktop, etc)
-            # "[//]192.168.1.1"
-            # send .lan to router
-            # "[/lan/]192.168.1.1"
-            # internal dns server
-            # "[/*.${domain}/]127.0.0.1"
-            # send www and root domain to upstream dns
-            # "[/${domain}/www.${domain}/]#"
-            # forward everything else to quad9
-            "tls://dns.quad9.net"
-          ];
-
-          # rewrites = [
-          #   # rewrite domain traffic to local ip
-          #   {
-          #     domain = "*.${domain}";
-          #     answer = "192.168.1.2";
-          #   }
-          #   # revert root domain and www traffic back to upstream
-          #   {
-          #     domain = domain;
-          #     answer = "A";
-          #   }
-          #   {
-          #     domain = "www.${domain}";
-          #     answer = "A";
-          #   }
-          # ];
-        };
-
-        querylog = {
-          enabled = true;
-          interval = "168h";
-        };
-
-        statistics = {
-          enabled = true;
-          interval = "168h";
-        };
-      };
-    };
-
     # Service that makes Out of Memory Killer more effective
     earlyoom.enable = true;
   };
@@ -337,26 +264,6 @@ in {
     extraConfig = ''
       DefaultTimeoutStopSec=5s
     '';
-  };
-  networking = {
-    nameservers = ["127.0.0.1"];
-    firewall = {
-      allowedTCPPorts = [53];
-      allowedUDPPorts = [53];
-    };
-  };
-  programs = {
-    openvpn3 = {
-      enable = true;
-      package = pkgs.openvpn3.overrideAttrs (old: {
-        patches =
-          (old.patches or [])
-          ++ [
-            ./fix-tests.patch # point to wherever you have this file, or use something like `fetchpatch`
-          ];
-        enableSystemdResolved = config.services.resolved.enable;
-      });
-    };
   };
   security = {
     wrappers = with pkgs; {

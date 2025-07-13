@@ -30,11 +30,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1752335473,
-        "narHash": "sha256-yWSHFaUeeQKG9NFPx2rW/0aJxBOi6iC+AeRX3DKSjIw=",
-        "rev": "cde9df1536d48e1ae45bc36f3cc73eece622d4a5",
+        "lastModified": 1752423261,
+        "narHash": "sha256-uDCVVXkDox3JOsspbR+skqAAl438NDIqz53emuBajfI=",
+        "rev": "45594e118bb3028191986591422949a845a09910",
         "type": "tarball",
-        "url": "https://git.clan.lol/api/v1/repos/clan/clan-core/archive/cde9df1536d48e1ae45bc36f3cc73eece622d4a5.tar.gz"
+        "url": "https://git.clan.lol/api/v1/repos/clan/clan-core/archive/45594e118bb3028191986591422949a845a09910.tar.gz"
       },
       "original": {
         "type": "tarball",
@@ -101,11 +101,11 @@
         "rust-analyzer-src": "rust-analyzer-src"
       },
       "locked": {
-        "lastModified": 1752302273,
-        "narHash": "sha256-xXZ0JkrpcpSgeuhezJZV2T+7gHcYCo39ogc55c4FyRw=",
+        "lastModified": 1752389012,
+        "narHash": "sha256-Y9PhEOyV+MrJG0Rgrd1AiX+9MfqRPu7msM2y04t57FY=",
         "owner": "nix-community",
         "repo": "fenix",
-        "rev": "910743660778c55917959d64980bf046f52142ef",
+        "rev": "444e34333e224a39ac3acb6d8831bde2d0e2902f",
         "type": "github"
       },
       "original": {
@@ -176,11 +176,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1752348734,
-        "narHash": "sha256-w3s5y+9Nn0oKUk6yS77YG1iRSizNStxqhEsgIlJKRtw=",
+        "lastModified": 1752402455,
+        "narHash": "sha256-mCHfZhQKdTj2JhCFcqfOfa3uKZbwUkPQbd0/zPnhOE8=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "ea24675e4f4f4c494ccb04f6645db2a394d348ee",
+        "rev": "bf893ad4cbf46610dd1b620c974f824e266cd1df",
         "type": "github"
       },
       "original": {
@@ -231,11 +231,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1752286423,
-        "narHash": "sha256-5a4+w/P9cr5l8YOypiwNrAIOyhLYA9x9Va1mqKkvwRs=",
+        "lastModified": 1752373577,
+        "narHash": "sha256-5ipIQ1dp4qLfgVOBRU3NqnESjF6CqD/HQVYlEXC4P0s=",
         "owner": "nix-community",
         "repo": "nix-vscode-extensions",
-        "rev": "f942441f13f5dbd29e4bd5596b2c2ba346c4940e",
+        "rev": "b8780c4b346250b6e86a7127dbe5e43a4bb394eb",
         "type": "github"
       },
       "original": {
