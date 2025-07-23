@@ -36,7 +36,7 @@
     ...
   }: let
     # Usage see: https://docs.clan.lol
-    clan = clan-core.lib.buildClan {
+    clan = clan-core.lib.clan {
       inherit self;
       # Ensure this is unique among all clans you want to use.
       meta.name = "requaos";
@@ -67,7 +67,8 @@
       };
     };
   in {
-    inherit (clan) nixosConfigurations clanInternals;
+    inherit (clan.config) nixosConfigurations clanInternals;
+    clan = clan.config;
     # Add the Clan cli tool to the dev shell.
     # Use "nix develop" to enter the dev shell.
     devShells =
